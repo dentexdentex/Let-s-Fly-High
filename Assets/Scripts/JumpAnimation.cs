@@ -2,12 +2,24 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 public class JumpAnimation : MonoBehaviour
 {
     [SerializeField] private float _cycleLength = 2;
     private Animator _animator;
     private Rigidbody rb;
+    
+
+   private int clickCount;
+
+   public float maxTime = 3f; // maksimum süre
+   public int clicksNeeded = 5; // tıklama sayısı
+   public float gravityForce = 10f; 
+
+   float timer = 0f; // sayaç
+
+   private bool _canClick = true;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -15,25 +27,43 @@ public class JumpAnimation : MonoBehaviour
     }
     private void Update()
     {
+        rb.AddForce(-Vector3.up * gravityForce, ForceMode.Impulse); 
+
         if (Input.GetKey(KeyCode.A))
         {
             Debug.Log("a");
             _animator.SetBool("Run", true);
-            _animator.SetBool("Fly", false); // Eğer önceki animasyon "Fly" ise durdurulur
+            _animator.SetBool("Fly", false); 
         }
         if (Input.GetKey(KeyCode.Space))
         {
             Debug.Log("space");
             _animator.SetBool("Fly", true);
-            _animator.SetBool("Run", false); // Eğer önceki animasyon "Run" ise durdurulur
+            _animator.SetBool("Run", false); 
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if ( _canClick &&Input.GetKeyDown(KeyCode.X))
         {
+            clickCount++;
+            Debug.Log("clickount :" + clickCount);
             Debug.Log("X");
             Flap();
         }
         
+        if (clickCount >= clicksNeeded) 
+        {
+            timer += Time.deltaTime; 
+            Debug.Log("timer " + timer);
+            if (timer <= maxTime) 
+            {
+                _canClick = false;
+            }
+            else
+            {
+                timer = 0f; 
+                clickCount = 0; // 
+            }
+        }
     }
     public float jumpForce = 99999f;
     Vector3 A = new Vector3(0, 0, 0);

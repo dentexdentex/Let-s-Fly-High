@@ -26,7 +26,48 @@ public class JumpAnimation : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
     private void Update()
-    {
+    {    {
+             rb.AddForce(-Vector3.up * gravityForce, ForceMode.Impulse); 
+     
+             if (Input.GetKey(KeyCode.A))
+             {
+                 Debug.Log("a");
+                 _animator.SetBool("Run", true);
+                 _animator.SetBool("Fly", false); 
+             }
+             if (Input.GetKey(KeyCode.Space))
+             {
+                 Debug.Log("space");
+                 _animator.SetBool("Fly", true);
+                 _animator.SetBool("Run", false); 
+             }
+     
+             if ( _canClick &&Input.GetKeyDown(KeyCode.X))
+             {
+                 clickCount++;
+                 Debug.Log("clickount :" + clickCount);
+                 Debug.Log("X");
+                 Flap();
+             }
+             
+             if (clickCount >= clicksNeeded) 
+             {
+                 timer += Time.deltaTime; 
+                 Debug.Log("timer " + timer);
+                 if (timer <= maxTime) 
+                 {
+                     _canClick = false;
+                     _animator.SetBool("Fly", false);
+                     _animator.SetBool("Run", false); 
+                     _animator.SetBool("Fall",true);
+                 }
+                 else
+                 {
+                     timer = 0f;  
+                 }
+             }
+         }
+
         rb.AddForce(-Vector3.up * gravityForce, ForceMode.Impulse); 
 
         if (Input.GetKey(KeyCode.A))
@@ -57,6 +98,9 @@ public class JumpAnimation : MonoBehaviour
             if (timer <= maxTime) 
             {
                 _canClick = false;
+                _animator.SetBool("Fly", false);
+                _animator.SetBool("Run", false); 
+                _animator.SetBool("Fall",true);
             }
             else
             {
